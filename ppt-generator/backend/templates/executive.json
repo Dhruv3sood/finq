@@ -1,0 +1,28 @@
+{
+  "name": "Executive",
+  "description": "Executive-level presentation style",
+  "colors": {
+    "primary": "#1E3A5F",
+    "secondary": "#2E5C8A",
+    "accent": "#C9A961",
+    "background": "#FFFFFF",
+    "text": "#1E3A5F"
+  },
+  "fonts": {
+    "title": {
+      "name": "Georgia",
+      "size": 40,
+      "bold": true
+    },
+    "body": {
+      "name": "Georgia",
+      "size": 16,
+      "bold": false
+    }
+  },
+  "layout": {
+    "title_slide": "centered",
+    "content_slide": "title_and_content"
+  }
+}
+

@@ -1,0 +1,26 @@
+{
+    "name": "Professional Business",
+    "description": "Clean, corporate design with data focus",
+    "colors": {
+      "primary": "#1e40af",
+      "secondary": "#3b82f6",
+      "accent": "#dbeafe",
+      "text": "#ffffff"
+    },
+    "fonts": {
+      "title": {
+        "family": "Arial",
+        "size": 44,
+        "bold": true
+      },
+      "body": {
+        "family": "Arial",
+        "size": 18,
+        "bold": false
+      }
+    },
+    "layout": {
+      "title_position": "center",
+      "content_padding": 1.0
+    }
+  }

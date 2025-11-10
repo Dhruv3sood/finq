@@ -1,0 +1,28 @@
+{
+  "name": "Modern",
+  "description": "Contemporary and stylish presentation style",
+  "colors": {
+    "primary": "#1A1A1A",
+    "secondary": "#FF6B6B",
+    "accent": "#4ECDC4",
+    "background": "#F7F7F7",
+    "text": "#333333"
+  },
+  "fonts": {
+    "title": {
+      "name": "Helvetica",
+      "size": 48,
+      "bold": true
+    },
+    "body": {
+      "name": "Helvetica",
+      "size": 20,
+      "bold": false
+    }
+  },
+  "layout": {
+    "title_slide": "centered",
+    "content_slide": "title_and_content"
+  }
+}
+

@@ -1,0 +1,28 @@
+{
+  "name": "Financial",
+  "description": "Formal financial presentation style",
+  "colors": {
+    "primary": "#003366",
+    "secondary": "#0066CC",
+    "accent": "#FF9900",
+    "background": "#FFFFFF",
+    "text": "#000000"
+  },
+  "fonts": {
+    "title": {
+      "name": "Calibri",
+      "size": 42,
+      "bold": true
+    },
+    "body": {
+      "name": "Calibri",
+      "size": 18,
+      "bold": false
+    }
+  },
+  "layout": {
+    "title_slide": "centered",
+    "content_slide": "title_and_content"
+  }
+}
+
