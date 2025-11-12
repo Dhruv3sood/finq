@@ -1,5 +1,6 @@
 from typing import Dict
 from utils.parser import BalanceSheetParser
+from utils.company_profile_parser import CompanyProfileParser
 from .llm_service import LLMService
 from .embedding_service import EmbeddingService
 from .rag_service import RAGService
@@ -9,6 +10,7 @@ class FileProcessor:
     
     def __init__(self):
         self.parser = BalanceSheetParser()
+        self.company_profile_parser = CompanyProfileParser()
         self.llm_service = LLMService()
         self.embedding_service = EmbeddingService()
         self.rag_service = RAGService(self.embedding_service)
@@ -27,26 +29,25 @@ class FileProcessor:
         # Step 1: Parse balance sheet into individual entries
         entries = self.parser.parse(balance_sheet_content)
         
-        # If company profile is provided, add it as an entry
+        # Step 2: Parse company profile into meaningful sections (if provided)
         if company_profile_content:
-            entries.append({
-                'title': 'Company Profile',
-                'content': [company_profile_content]
-            })
+            company_sections = self.company_profile_parser.parse(company_profile_content)
+            # Add company profile sections to entries
+            entries.extend(company_sections)
         
         if not entries:
             raise ValueError("No entries found in the file. Please check the file format.")
         
-        # Step 2: Generate individual summaries for each entry using LLM
+        # Step 3: Generate individual summaries for each entry using LLM
         summaries = self.llm_service.generate_summaries(entries)
         
         if not summaries:
             raise ValueError("Failed to generate summaries. Please check your OpenAI API key and file content.")
         
-        # Step 3: Create embeddings for each entry's summary
+        # Step 4: Create embeddings for each entry's summary
         embedded_summaries = self.embedding_service.create_embeddings(summaries)
         
-        # Step 4: Index in RAG system
+        # Step 5: Index in RAG system
         self.rag_service.index_documents(embedded_summaries)
         
         return {

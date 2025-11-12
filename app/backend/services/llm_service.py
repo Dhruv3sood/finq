@@ -15,16 +15,32 @@ class LLMService:
     
     def generate_summary(self, entry_title: str, content: str) -> str:
         """
-        Generate a concise summary of a balance sheet entry
+        Generate a concise summary of a balance sheet entry or company profile section
         
         Args:
-            entry_title: Title/name of the entry
-            content: Content to summarize (values across time periods)
+            entry_title: Title/name of the entry or section
+            content: Content to summarize (values across time periods or company information)
             
         Returns:
             Summary text
         """
-        prompt = f"""Analyze this balance sheet entry and provide a concise summary in 2-3 sentences.
+        # Determine if this is a company profile section or balance sheet entry
+        is_company_profile = any(keyword in entry_title.lower() for keyword in [
+            'company', 'mission', 'vision', 'history', 'products', 'services', 
+            'market', 'leadership', 'operations', 'technology', 'partnerships', 'future'
+        ])
+        
+        if is_company_profile:
+            prompt = f"""Analyze this company profile section and provide a concise summary in 2-3 sentences.
+Focus on key information, important details, and insights that would be valuable for understanding the company.
+Highlight notable facts, achievements, or strategic information.
+
+Section: {entry_title}
+Content: {content}
+
+Provide a clear, professional summary:"""
+        else:
+            prompt = f"""Analyze this balance sheet entry and provide a concise summary in 2-3 sentences.
 Focus on key financial metrics, trends over time, and insights that would be valuable for financial analysis.
 Highlight significant changes, patterns, or notable values.
 
@@ -34,10 +50,12 @@ Data: {content}
 Provide a clear, professional summary:"""
         
         try:
+            system_message = "You are a financial analyst expert at summarizing individual balance sheet entries and identifying trends over time. You are also skilled at summarizing company profile sections to extract key business information."
+            
             response = self.client.chat.completions.create(
                 model=Config.SUMMARY_MODEL,
                 messages=[
-                    {"role": "system", "content": "You are a financial analyst expert at summarizing individual balance sheet entries and identifying trends over time."},
+                    {"role": "system", "content": system_message},
                     {"role": "user", "content": prompt}
                 ],
                 temperature=0.7,

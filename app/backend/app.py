@@ -2,10 +2,12 @@ from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 import os
 import hashlib
+import io
 from services.rag_processor import FileProcessor as RAGProcessor
 from services.file_processor import FileProcessor as PPTFileProcessor
 from services.slide_generator import SlideGenerator
 from config import Config
+from utils.pdf_extractor import PDFExtractor
 
 app = Flask(__name__)
 CORS(app)
@@ -39,12 +41,20 @@ def rag_upload():
         if ext not in Config.ALLOWED_EXTENSIONS:
             return jsonify({'error': f'Invalid file type. Allowed: {Config.ALLOWED_EXTENSIONS}'}), 400
         
-        # Read file content
-        balance_sheet_content = balance_sheet.read().decode('utf-8')
-        company_profile_content = None
+        # Read file content (handle PDF or text files)
+        if PDFExtractor.is_pdf_file(balance_sheet.filename):
+            balance_sheet.seek(0)  # Reset file pointer
+            balance_sheet_content = PDFExtractor.extract_text(balance_sheet)
+        else:
+            balance_sheet_content = balance_sheet.read().decode('utf-8')
         
+        company_profile_content = None
         if company_profile:
-            company_profile_content = company_profile.read().decode('utf-8')
+            if PDFExtractor.is_pdf_file(company_profile.filename):
+                company_profile.seek(0)  # Reset file pointer
+                company_profile_content = PDFExtractor.extract_text(company_profile)
+            else:
+                company_profile_content = company_profile.read().decode('utf-8')
         
         # Create processor instance
         processor = RAGProcessor()
@@ -108,10 +118,23 @@ def ppt_upload():
                 'errors': validation['errors']
             }), 400
         
-        # Process files
-        balance_sheet_text, company_profile_text = PPTFileProcessor.process_files(
-            balance_sheet, company_profile
-        )
+        # Process files (handle PDF or text files)
+        balance_sheet_text = None
+        company_profile_text = None
+        
+        # Extract balance sheet content
+        if PDFExtractor.is_pdf_file(balance_sheet.filename):
+            balance_sheet.seek(0)  # Reset file pointer
+            balance_sheet_text = PDFExtractor.extract_text(balance_sheet)
+        else:
+            balance_sheet_text = balance_sheet.read().decode('utf-8')
+        
+        # Extract company profile content
+        if PDFExtractor.is_pdf_file(company_profile.filename):
+            company_profile.seek(0)  # Reset file pointer
+            company_profile_text = PDFExtractor.extract_text(company_profile)
+        else:
+            company_profile_text = company_profile.read().decode('utf-8')
         
         # Generate session ID
         session_id = hashlib.md5(

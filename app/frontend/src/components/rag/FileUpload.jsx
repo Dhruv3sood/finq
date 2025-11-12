@@ -38,7 +38,7 @@ function RAGFileUpload({ onUpload }) {
   const handleFiles = (files) => {
     files.forEach(file => {
       const fileExt = file.name.split('.').pop().toLowerCase();
-      const allowedExts = ['csv', 'txt', 'text'];
+      const allowedExts = ['csv', 'txt', 'text', 'pdf'];
       
       if (allowedExts.includes(fileExt)) {
         if (!balanceSheet) {
@@ -77,7 +77,7 @@ function RAGFileUpload({ onUpload }) {
               <input
                 type="file"
                 className="hidden"
-                accept=".csv,.txt,.text"
+                accept=".csv,.txt,.text,.pdf"
                 onChange={(e) => handleChange(e, 'balance_sheet')}
               />
             </label>
@@ -103,7 +103,7 @@ function RAGFileUpload({ onUpload }) {
               <input
                 type="file"
                 className="hidden"
-                accept=".csv,.txt,.text"
+                accept=".csv,.txt,.text,.pdf"
                 onChange={(e) => handleChange(e, 'company_profile')}
               />
             </label>

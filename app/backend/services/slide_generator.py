@@ -30,7 +30,8 @@ class SlideGenerator:
         """
         # Parse input data
         balance_data = self.parser.parse_balance_sheet(balance_sheet_text)
-        company_data = self.parser.parse_company_profile(company_profile_text)
+        # Use LLM service for enhanced company profile parsing
+        company_data = self.parser.parse_company_profile(company_profile_text, llm_service=self.llm_service)
         metrics = self.parser.extract_financial_metrics(balance_data)
         
         # Generate slides

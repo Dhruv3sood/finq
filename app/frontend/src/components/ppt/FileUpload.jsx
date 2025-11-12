@@ -64,7 +64,7 @@ function PPTFileUpload({ onUploadSuccess }) {
               <input
                 type="file"
                 className="hidden"
-                accept=".txt,.csv,.xlsx"
+                accept=".txt,.csv,.xlsx,.pdf"
                 onChange={handleBalanceSheetChange}
               />
             </label>
@@ -90,7 +90,7 @@ function PPTFileUpload({ onUploadSuccess }) {
               <input
                 type="file"
                 className="hidden"
-                accept=".txt,.csv,.xlsx"
+                accept=".txt,.csv,.xlsx,.pdf"
                 onChange={handleCompanyProfileChange}
               />
             </label>

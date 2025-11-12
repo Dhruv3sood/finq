@@ -6,7 +6,7 @@ load_dotenv()
 class Config:
     OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', '')
     MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
-    ALLOWED_EXTENSIONS = {'txt', 'csv', 'text', 'xlsx'}
+    ALLOWED_EXTENSIONS = {'txt', 'csv', 'text', 'xlsx', 'pdf'}
     
     # LLM Configuration
     SUMMARY_MODEL = 'gpt-3.5-turbo'
