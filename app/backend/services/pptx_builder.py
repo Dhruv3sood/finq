@@ -59,6 +59,16 @@ class PPTXBuilder:
                 self._add_insights_slide(content)
             elif slide_type == 'company':
                 self._add_company_slide(content)
+            elif slide_type == 'products_services':
+                self._add_products_services_slide(content)
+            elif slide_type == 'markets_locations':
+                self._add_markets_locations_slide(content)
+            elif slide_type == 'leadership':
+                self._add_leadership_slide(content)
+            elif slide_type == 'major_projects':
+                self._add_major_projects_slide(content)
+            elif slide_type == 'vision_mission':
+                self._add_vision_mission_slide(content)
         
         # Ensure output directory exists
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
@@ -132,7 +142,7 @@ class PPTXBuilder:
         title_box = slide.shapes.add_textbox(
             Inches(0.5), Inches(0.5),
             Inches(9), Inches(0.8)
-        )
+            )
         title_frame = title_box.text_frame
         title_frame.text = content.get('title', 'Executive Summary')
         title_frame.paragraphs[0].font.size = Pt(40)
@@ -238,7 +248,7 @@ class PPTXBuilder:
         title_box = slide.shapes.add_textbox(
             Inches(0.5), Inches(0.5),
             Inches(9), Inches(0.8)
-        )
+            )
         title_frame = title_box.text_frame
         title_frame.text = content.get('title', f'{slide_type.title()} Breakdown')
         title_frame.paragraphs[0].font.size = Pt(40)
@@ -249,7 +259,7 @@ class PPTXBuilder:
         overview_box = slide.shapes.add_textbox(
             Inches(1), Inches(2),
             Inches(4), Inches(3)
-        )
+            )
         tf = overview_box.text_frame
         
         p1 = tf.paragraphs[0]
@@ -301,7 +311,7 @@ class PPTXBuilder:
         background = slide.shapes.add_shape(
             1, Inches(0), Inches(0),
             Inches(Config.SLIDE_WIDTH), Inches(Config.SLIDE_HEIGHT)
-        )
+            )
         background.fill.solid()
         background.fill.fore_color.rgb = self.theme['primary']
         background.line.fill.background()
@@ -310,7 +320,7 @@ class PPTXBuilder:
         title_box = slide.shapes.add_textbox(
             Inches(0.5), Inches(0.5),
             Inches(9), Inches(0.8)
-        )
+            )
         title_frame = title_box.text_frame
         title_frame.text = content.get('title', 'Financial Ratios')
         title_frame.paragraphs[0].font.size = Pt(40)
@@ -363,7 +373,7 @@ class PPTXBuilder:
         background = slide.shapes.add_shape(
             1, Inches(0), Inches(0),
             Inches(Config.SLIDE_WIDTH), Inches(Config.SLIDE_HEIGHT)
-        )
+            )
         background.fill.solid()
         background.fill.fore_color.rgb = self.theme['primary']
         background.line.fill.background()
@@ -372,7 +382,7 @@ class PPTXBuilder:
         title_box = slide.shapes.add_textbox(
             Inches(0.5), Inches(0.5),
             Inches(9), Inches(0.8)
-        )
+            )
         title_frame = title_box.text_frame
         title_frame.text = content.get('title', 'Insights')
         title_frame.paragraphs[0].font.size = Pt(40)
@@ -411,7 +421,7 @@ class PPTXBuilder:
             section_box = slide.shapes.add_textbox(
                 Inches(1), Inches(y_position),
                 Inches(8), Inches(2)
-            )
+                )
             tf = section_box.text_frame
             
             p1 = tf.paragraphs[0]
@@ -444,7 +454,7 @@ class PPTXBuilder:
         title_box = slide.shapes.add_textbox(
             Inches(0.5), Inches(0.5),
             Inches(9), Inches(0.8)
-        )
+            )
         title_frame = title_box.text_frame
         title_frame.text = content.get('company_name', 'Company Profile')
         title_frame.paragraphs[0].font.size = Pt(40)
@@ -455,9 +465,9 @@ class PPTXBuilder:
         info_box = slide.shapes.add_textbox(
             Inches(1), Inches(1.8),
             Inches(8), Inches(5)
-        )
+            )
         tf = info_box.text_frame
-        
+            
         # Industry and Founded
         if content.get('industry') or content.get('founded'):
             p = tf.paragraphs[0]
@@ -488,7 +498,7 @@ class PPTXBuilder:
         
         # Key Facts
         if content.get('key_facts'):
-            p = tf.add_paragraph()
+                p = tf.add_paragraph()
             p.text = "Key Facts"
             p.font.size = Pt(22)
             p.font.bold = True
@@ -501,3 +511,385 @@ class PPTXBuilder:
                 p.font.size = Pt(16)
                 p.font.color.rgb = RGBColor(200, 200, 200)
                 p.space_before = Pt(5)
+    
+    def _add_products_services_slide(self, content: Dict):
+        """Add products & services slide"""
+        slide = self.prs.slides.add_slide(self.prs.slide_layouts[6])
+        
+        # Background
+        background = slide.shapes.add_shape(
+            1, Inches(0), Inches(0),
+            Inches(Config.SLIDE_WIDTH), Inches(Config.SLIDE_HEIGHT)
+            )
+        background.fill.solid()
+        background.fill.fore_color.rgb = self.theme['primary']
+        background.line.fill.background()
+        
+        # Title
+        title_box = slide.shapes.add_textbox(
+            Inches(0.5), Inches(0.5),
+            Inches(9), Inches(0.8)
+        )
+        title_frame = title_box.text_frame
+        title_frame.text = content.get('title', 'Products & Services')
+        title_frame.paragraphs[0].font.size = Pt(40)
+        title_frame.paragraphs[0].font.bold = True
+        title_frame.paragraphs[0].font.color.rgb = RGBColor(255, 255, 255)
+        
+        # Content box
+        content_box = slide.shapes.add_textbox(
+            Inches(1), Inches(1.8),
+            Inches(8), Inches(5)
+            )
+        tf = content_box.text_frame
+        tf.word_wrap = True
+        
+        # Products
+        if content.get('products'):
+            p = tf.paragraphs[0]
+            p.text = "Products & Services:"
+            p.font.size = Pt(22)
+            p.font.bold = True
+            p.font.color.rgb = RGBColor(255, 255, 255)
+            p.space_after = Pt(12)
+            
+            for product in content['products']:
+                p = tf.add_paragraph()
+                p.text = f"• {product}"
+                p.font.size = Pt(16)
+                p.font.color.rgb = RGBColor(200, 200, 200)
+                p.space_after = Pt(8)
+        
+        # Categories
+        if content.get('categories'):
+            p = tf.add_paragraph()
+            p.text = "Categories:"
+            p.font.size = Pt(20)
+            p.font.bold = True
+            p.font.color.rgb = RGBColor(255, 255, 255)
+            p.space_before = Pt(16)
+            p.space_after = Pt(12)
+            
+            for category in content['categories']:
+                p = tf.add_paragraph()
+                p.text = f"• {category}"
+                p.font.size = Pt(14)
+                p.font.color.rgb = RGBColor(200, 200, 200)
+                p.space_after = Pt(6)
+        
+        # Certifications
+        if content.get('certifications'):
+            p = tf.add_paragraph()
+            p.text = "Certifications:"
+            p.font.size = Pt(18)
+            p.font.bold = True
+            p.font.color.rgb = RGBColor(255, 255, 255)
+            p.space_before = Pt(12)
+            p.space_after = Pt(8)
+            
+            certs_text = " | ".join(content['certifications'][:4])
+            p = tf.add_paragraph()
+            p.text = certs_text
+            p.font.size = Pt(14)
+            p.font.color.rgb = RGBColor(200, 200, 200)
+    
+    def _add_markets_locations_slide(self, content: Dict):
+        """Add markets & locations slide"""
+        slide = self.prs.slides.add_slide(self.prs.slide_layouts[6])
+        
+        # Background
+        background = slide.shapes.add_shape(
+            1, Inches(0), Inches(0),
+            Inches(Config.SLIDE_WIDTH), Inches(Config.SLIDE_HEIGHT)
+        )
+        background.fill.solid()
+        background.fill.fore_color.rgb = self.theme['primary']
+        background.line.fill.background()
+        
+        # Title
+        title_box = slide.shapes.add_textbox(
+            Inches(0.5), Inches(0.5),
+            Inches(9), Inches(0.8)
+        )
+        title_frame = title_box.text_frame
+        title_frame.text = content.get('title', 'Markets & Locations')
+        title_frame.paragraphs[0].font.size = Pt(40)
+        title_frame.paragraphs[0].font.bold = True
+        title_frame.paragraphs[0].font.color.rgb = RGBColor(255, 255, 255)
+        
+        # Content box
+        content_box = slide.shapes.add_textbox(
+            Inches(1), Inches(1.8),
+            Inches(8), Inches(5)
+        )
+        tf = content_box.text_frame
+        tf.word_wrap = True
+        
+        # Markets
+        if content.get('markets'):
+            p = tf.paragraphs[0]
+            p.text = "Markets Served:"
+            p.font.size = Pt(22)
+            p.font.bold = True
+            p.font.color.rgb = RGBColor(255, 255, 255)
+            p.space_after = Pt(12)
+            
+            for market in content['markets']:
+                p = tf.add_paragraph()
+                p.text = f"• {market}"
+                p.font.size = Pt(16)
+                p.font.color.rgb = RGBColor(200, 200, 200)
+                p.space_after = Pt(8)
+        
+        # Locations
+        if content.get('locations'):
+            p = tf.add_paragraph()
+            p.text = "Locations:"
+            p.font.size = Pt(20)
+            p.font.bold = True
+            p.font.color.rgb = RGBColor(255, 255, 255)
+            p.space_before = Pt(16)
+            p.space_after = Pt(12)
+            
+            for location in content['locations']:
+                p = tf.add_paragraph()
+                p.text = f"• {location}"
+            p.font.size = Pt(14)
+                p.font.color.rgb = RGBColor(200, 200, 200)
+                p.space_after = Pt(6)
+        
+        # Manufacturing
+        if content.get('manufacturing'):
+            p = tf.add_paragraph()
+            p.text = "Manufacturing Capabilities:"
+            p.font.size = Pt(18)
+            p.font.bold = True
+            p.font.color.rgb = RGBColor(255, 255, 255)
+            p.space_before = Pt(12)
+            p.space_after = Pt(8)
+            
+            p = tf.add_paragraph()
+            p.text = content['manufacturing']
+            p.font.size = Pt(14)
+            p.font.color.rgb = RGBColor(200, 200, 200)
+    
+    def _add_leadership_slide(self, content: Dict):
+        """Add leadership & team slide"""
+        slide = self.prs.slides.add_slide(self.prs.slide_layouts[6])
+        
+        # Background
+        background = slide.shapes.add_shape(
+            1, Inches(0), Inches(0),
+            Inches(Config.SLIDE_WIDTH), Inches(Config.SLIDE_HEIGHT)
+        )
+        background.fill.solid()
+        background.fill.fore_color.rgb = self.theme['primary']
+        background.line.fill.background()
+        
+        # Title
+        title_box = slide.shapes.add_textbox(
+            Inches(0.5), Inches(0.5),
+            Inches(9), Inches(0.8)
+        )
+        title_frame = title_box.text_frame
+        title_frame.text = content.get('title', 'Leadership & Team')
+        title_frame.paragraphs[0].font.size = Pt(40)
+        title_frame.paragraphs[0].font.bold = True
+        title_frame.paragraphs[0].font.color.rgb = RGBColor(255, 255, 255)
+        
+        # Content box
+        content_box = slide.shapes.add_textbox(
+            Inches(1), Inches(1.8),
+            Inches(8), Inches(5)
+            )
+        tf = content_box.text_frame
+        tf.word_wrap = True
+        
+        # CEO Message
+        if content.get('ceo_message_summary'):
+            p = tf.paragraphs[0]
+            p.text = "CEO's Message:"
+            p.font.size = Pt(22)
+            p.font.bold = True
+            p.font.color.rgb = RGBColor(255, 255, 255)
+            p.space_after = Pt(12)
+            
+                p = tf.add_paragraph()
+            p.text = content['ceo_message_summary']
+            p.font.size = Pt(14)
+            p.font.color.rgb = RGBColor(200, 200, 200)
+            p.space_after = Pt(20)
+        
+        # Leadership Team
+        if content.get('leadership'):
+            p = tf.add_paragraph()
+            p.text = "Leadership Team:"
+            p.font.size = Pt(20)
+            p.font.bold = True
+            p.font.color.rgb = RGBColor(255, 255, 255)
+            p.space_after = Pt(12)
+            
+            for leader in content['leadership']:
+                p = tf.add_paragraph()
+                p.text = f"• {leader}"
+                p.font.size = Pt(16)
+                p.font.color.rgb = RGBColor(200, 200, 200)
+                p.space_after = Pt(8)
+    
+    def _add_major_projects_slide(self, content: Dict):
+        """Add major projects & clients slide"""
+        slide = self.prs.slides.add_slide(self.prs.slide_layouts[6])
+        
+        # Background
+        background = slide.shapes.add_shape(
+            1, Inches(0), Inches(0),
+            Inches(Config.SLIDE_WIDTH), Inches(Config.SLIDE_HEIGHT)
+        )
+        background.fill.solid()
+        background.fill.fore_color.rgb = self.theme['primary']
+        background.line.fill.background()
+        
+        # Title
+        title_box = slide.shapes.add_textbox(
+            Inches(0.5), Inches(0.5),
+            Inches(9), Inches(0.8)
+            )
+        title_frame = title_box.text_frame
+        title_frame.text = content.get('title', 'Major Projects & Clients')
+        title_frame.paragraphs[0].font.size = Pt(40)
+        title_frame.paragraphs[0].font.bold = True
+        title_frame.paragraphs[0].font.color.rgb = RGBColor(255, 255, 255)
+        
+        # Content box
+        content_box = slide.shapes.add_textbox(
+            Inches(1), Inches(1.8),
+            Inches(8), Inches(5)
+            )
+        tf = content_box.text_frame
+        tf.word_wrap = True
+        
+        # Major Projects
+        if content.get('projects'):
+            p = tf.paragraphs[0]
+            p.text = "Major Projects:"
+            p.font.size = Pt(22)
+            p.font.bold = True
+            p.font.color.rgb = RGBColor(255, 255, 255)
+            p.space_after = Pt(12)
+            
+            for project in content['projects']:
+                p = tf.add_paragraph()
+                p.text = f"• {project}"
+                p.font.size = Pt(16)
+                p.font.color.rgb = RGBColor(200, 200, 200)
+                p.space_after = Pt(8)
+        
+        # Clients
+        if content.get('clients'):
+            p = tf.add_paragraph()
+            p.text = "Notable Clients:"
+            p.font.size = Pt(20)
+            p.font.bold = True
+            p.font.color.rgb = RGBColor(255, 255, 255)
+            p.space_before = Pt(16)
+            p.space_after = Pt(12)
+            
+            clients_text = " | ".join(content['clients'][:8])
+                p = tf.add_paragraph()
+            p.text = clients_text
+                p.font.size = Pt(14)
+            p.font.color.rgb = RGBColor(200, 200, 200)
+    
+    def _add_vision_mission_slide(self, content: Dict):
+        """Add vision & mission slide"""
+        slide = self.prs.slides.add_slide(self.prs.slide_layouts[6])
+        
+        # Background
+        background = slide.shapes.add_shape(
+            1, Inches(0), Inches(0),
+            Inches(Config.SLIDE_WIDTH), Inches(Config.SLIDE_HEIGHT)
+            )
+        background.fill.solid()
+        background.fill.fore_color.rgb = self.theme['primary']
+        background.line.fill.background()
+        
+        # Title
+        title_box = slide.shapes.add_textbox(
+            Inches(0.5), Inches(0.5),
+            Inches(9), Inches(0.8)
+        )
+        title_frame = title_box.text_frame
+        title_frame.text = content.get('title', 'Vision, Mission & Values')
+        title_frame.paragraphs[0].font.size = Pt(40)
+        title_frame.paragraphs[0].font.bold = True
+        title_frame.paragraphs[0].font.color.rgb = RGBColor(255, 255, 255)
+        
+        # Content box
+        content_box = slide.shapes.add_textbox(
+            Inches(1), Inches(1.8),
+            Inches(8), Inches(5)
+            )
+        tf = content_box.text_frame
+        tf.word_wrap = True
+        
+        # Vision
+        if content.get('vision'):
+            p = tf.paragraphs[0]
+            p.text = "Vision:"
+            p.font.size = Pt(22)
+            p.font.bold = True
+            p.font.color.rgb = RGBColor(255, 255, 255)
+            p.space_after = Pt(8)
+            
+            p = tf.add_paragraph()
+            p.text = content['vision']
+            p.font.size = Pt(16)
+            p.font.color.rgb = RGBColor(200, 200, 200)
+            p.space_after = Pt(16)
+        
+        # Mission
+        if content.get('mission'):
+            p = tf.add_paragraph()
+            p.text = "Mission:"
+            p.font.size = Pt(22)
+            p.font.bold = True
+            p.font.color.rgb = RGBColor(255, 255, 255)
+            p.space_after = Pt(8)
+            
+            p = tf.add_paragraph()
+            p.text = content['mission']
+            p.font.size = Pt(16)
+            p.font.color.rgb = RGBColor(200, 200, 200)
+            p.space_after = Pt(16)
+        
+        # Values
+        if content.get('values'):
+            p = tf.add_paragraph()
+            p.text = "Core Values:"
+            p.font.size = Pt(20)
+            p.font.bold = True
+            p.font.color.rgb = RGBColor(255, 255, 255)
+            p.space_after = Pt(8)
+            
+            for value in content['values']:
+                p = tf.add_paragraph()
+                p.text = f"• {value}"
+                p.font.size = Pt(14)
+                p.font.color.rgb = RGBColor(200, 200, 200)
+                p.space_after = Pt(6)
+        
+        # USPs
+        if content.get('usps'):
+            p = tf.add_paragraph()
+            p.text = "Unique Selling Points:"
+            p.font.size = Pt(18)
+            p.font.bold = True
+                p.font.color.rgb = RGBColor(255, 255, 255)
+            p.space_before = Pt(12)
+            p.space_after = Pt(8)
+
+            usps_text = " | ".join(content['usps'][:4])
+            p = tf.add_paragraph()
+            p.text = usps_text
+            p.font.size = Pt(14)
+            p.font.color.rgb = RGBColor(200, 200, 200)

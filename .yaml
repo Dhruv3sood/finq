@@ -1,0 +1,155 @@
+agents:
+  - id: loader_agent
+    description: |
+      Loads and parses balance sheet and company profile documents into clean text chunks with metadata.
+      Handles both PDF and text files, splits into optimal chunks, and creates embeddings.
+    tools:
+      - pdf_loader
+      - text_splitter
+      - embedder
+      - vector_db
+      - balance_sheet_parser
+      - company_profile_parser
+    steps:
+      - call: pdf_loader
+        args:
+          file_path: ${{balance_sheet_file}}
+      - call: balance_sheet_parser
+        args:
+          content: ${{balance_sheet_content}}
+      - call: pdf_loader
+        args:
+          file_path: ${{company_profile_file}}
+        condition: "if company_profile_file exists"
+      - call: company_profile_parser
+        args:
+          content: ${{company_profile_content}}
+        condition: "if company_profile_content exists"
+      - call: text_splitter
+        args:
+          chunk_size: 800
+          chunk_overlap: 100
+      - call: embedder
+        args:
+          model: "text-embedding-3-large"
+      - call: vector_db
+        args:
+          action: "store"
+          db_name: "rag_db"
+
+  - id: query_router_agent
+    description: |
+      Routes user queries to appropriate handlers based on query type (factual, vague, summary).
+      Determines if query needs rewriting or special handling.
+    model: gpt-4o-mini
+    prompt: |
+      Analyze the query and determine its type: factual, vague, or summary.
+      Return JSON with type, reasoning, and needs_rewrite flag.
+      Query: ${{user_query}}
+
+  - id: query_rewriter_agent
+    description: |
+      Rewrites unclear or underspecified queries for better retrieval.
+      Makes queries more specific to financial and company profile context.
+    model: gpt-4o-mini
+    prompt: |
+      Rewrite the following query to make it specific to company financial documents and profiles.
+      Return only the improved query.
+      Original Query: ${{user_query}}
+
+  - id: retriever_agent
+    description: |
+      Searches the vector DB for the most relevant document sections.
+      Uses semantic similarity to find best matching chunks.
+    tools:
+      - vector_db
+      - embedder
+    steps:
+      - call: embedder
+        args:
+          text: ${{effective_query}}
+      - call: vector_db
+        args:
+          action: "search"
+          query_embedding: ${{query_embedding}}
+          k: 4
+          filter_metadata: ${{filter_metadata}}
+
+  - id: context_compressor_agent
+    description: |
+      Compresses multiple retrieved chunks into a concise context summary.
+      Preserves all important numbers, names, and key information.
+    model: gpt-4o-mini
+    prompt: |
+      Summarize and deduplicate the following retrieved text snippets into a concise,
+      factual paragraph preserving all important numbers, names, and key information.
+      Retrieved Context:
+      ${{retrieved_docs}}
+      Query: ${{user_query}}
+
+  - id: summarizer_agent
+    description: |
+      Generates comprehensive summaries from retrieved documents.
+      Used for summary-type queries.
+    model: gpt-4o
+    prompt: |
+      Generate a comprehensive summary based on the following retrieved documents.
+      Focus on: ${{user_query}}
+      Documents:
+      ${{retrieved_docs}}
+
+  - id: answer_agent
+    description: |
+      Generates the final grounded answer from compressed context.
+      Uses retrieved context to answer user queries factually.
+    model: gpt-4o
+    prompt: |
+      You are a factual RAG assistant for company financial documents and profiles.
+      Use only the retrieved context to answer user queries.
+      Cite section names and specific data points when possible.
+      Context:
+      ${{compressed_context}}
+      Question:
+      ${{user_query}}
+      Answer concisely and factually.
+
+  - id: grounding_checker_agent
+    description: |
+      Validates if the generated answer is faithful to the context.
+      Detects hallucinations and provides corrected versions with citations.
+    model: gpt-4o
+    prompt: |
+      Check if the answer is grounded in the retrieved context.
+      If hallucination is detected, return a corrected version citing text evidence.
+      Answer: ${{answer}}
+      Context: ${{context}}
+      Query: ${{user_query}}
+
+graph:
+  - from: user
+    to: query_router_agent
+  - from: query_router_agent
+    to: query_rewriter_agent
+    condition: "if query_type == 'vague' or needs_rewrite == true"
+  - from: query_router_agent
+    to: retriever_agent
+    condition: "if query_type == 'factual'"
+  - from: query_rewriter_agent
+    to: retriever_agent
+  - from: query_router_agent
+    to: retriever_agent
+    condition: "if query_type == 'summary'"
+  - from: retriever_agent
+    to: context_compressor_agent
+    condition: "if query_type == 'factual' or query_type == 'vague'"
+  - from: retriever_agent
+    to: summarizer_agent
+    condition: "if query_type == 'summary'"
+  - from: context_compressor_agent
+    to: answer_agent
+  - from: answer_agent
+    to: grounding_checker_agent
+  - from: grounding_checker_agent
+    to: user
+  - from: summarizer_agent
+    to: user

@@ -9,4 +9,6 @@ python-pptx>=0.6.21
 Pillow>=10.2.0
 matplotlib>=3.8.0
 PyPDF2>=3.0.0
+duckduckgo-search>=4.0.0
+googlesearch-python>=1.2.3
 

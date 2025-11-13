@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { Upload, FileText } from 'lucide-react';
+import { Upload, FileText, Loader2, CheckCircle, Clock } from 'lucide-react';
 
 function RAGFileUpload({ onUpload }) {
   const [balanceSheet, setBalanceSheet] = useState(null);
   const [companyProfile, setCompanyProfile] = useState(null);
   const [dragActive, setDragActive] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [processingStatus, setProcessingStatus] = useState('');
+  const [processingComplete, setProcessingComplete] = useState(false);
 
   const handleDrag = (e) => {
     e.preventDefault();
@@ -50,13 +53,38 @@ function RAGFileUpload({ onUpload }) {
     });
   };
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (!balanceSheet) {
       alert('Please upload a balance sheet file');
       return;
     }
+    
+    setIsProcessing(true);
+    setProcessingComplete(false);
+    setProcessingStatus('📤 Uploading files...');
+    
+    // Simulate upload progress
+    setTimeout(() => setProcessingStatus('📄 Extracting text from documents...'), 500);
+    setTimeout(() => setProcessingStatus('🧠 Parsing company profile with AI...'), 1500);
+    setTimeout(() => setProcessingStatus('✂️ Splitting text into chunks...'), 3000);
+    setTimeout(() => setProcessingStatus('🔢 Creating embeddings...'), 4500);
+    setTimeout(() => setProcessingStatus('💾 Indexing in vector database...'), 6000);
+    
+    try {
     // Company profile is optional
-    onUpload(balanceSheet, companyProfile);
+      const result = await onUpload(balanceSheet, companyProfile);
+      
+      setProcessingStatus('✅ Ready for chatbot!');
+      setProcessingComplete(true);
+      
+      // Show completion message
+      setTimeout(() => {
+        setIsProcessing(false);
+      }, 2000);
+    } catch (error) {
+      setProcessingStatus('❌ Processing failed: ' + error.message);
+      setTimeout(() => setIsProcessing(false), 3000);
+    }
   };
 
   return (
@@ -119,11 +147,66 @@ function RAGFileUpload({ onUpload }) {
 
       <button
         onClick={handleUpload}
-        disabled={!balanceSheet}
-        className="mt-6 w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+        disabled={!balanceSheet || isProcessing}
+        className="mt-6 w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-medium flex items-center justify-center gap-2"
       >
+        {isProcessing ? (
+          <>
+            <Loader2 className="h-5 w-5 animate-spin" />
+            Processing...
+          </>
+        ) : processingComplete ? (
+          <>
+            <CheckCircle className="h-5 w-5" />
+            Uploaded Successfully
+          </>
+        ) : (
+          <>
+            <Upload className="h-5 w-5" />
         Upload & Process
+          </>
+        )}
       </button>
+
+      {/* Processing Status */}
+      {isProcessing && (
+        <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <Loader2 className="h-5 w-5 text-blue-600 animate-spin mt-0.5 flex-shrink-0" />
+            <div className="flex-1">
+              <p className="text-sm font-medium text-blue-900 mb-1">
+                {processingStatus}
+              </p>
+              <p className="text-xs text-blue-700">
+                This usually takes 5-15 seconds depending on document size...
+              </p>
+            </div>
+          </div>
+          
+          {/* Progress bar */}
+          <div className="mt-3 w-full bg-blue-200 rounded-full h-2 overflow-hidden">
+            <div className="bg-blue-600 h-full rounded-full animate-pulse" 
+                 style={{width: processingComplete ? '100%' : '60%', transition: 'width 0.5s ease-in-out'}}></div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Message */}
+      {processingComplete && !isProcessing && (
+        <div className="mt-6 bg-green-50 border border-green-200 rounded-lg p-4">
+          <div className="flex items-center gap-3">
+            <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
+            <div>
+              <p className="text-sm font-medium text-green-900">
+                ✅ Documents processed successfully!
+              </p>
+              <p className="text-xs text-green-700 mt-1">
+                Your chatbot is now ready. Start asking questions below! 💬
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
